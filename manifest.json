@@ -1,0 +1,35 @@
+{
+  "id": "./",
+  "name": "Zaytoon Restaurant",
+  "short_name": "Zaytoon",
+  "description": "Zaytoon Restaurant official menu and restaurant information app.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#6b8e23",
+  "background_color": "#070806",
+  "dir": "rtl",
+  "lang": "ps",
+  "categories": ["food"],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

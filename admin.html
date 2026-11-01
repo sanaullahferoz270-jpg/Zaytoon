@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- The admin page must never appear in search engines -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#070806">
+  <title>Zaytoon Admin</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+
+  <!--
+    SECURITY NOTE
+    Frontend route hiding is not security. Supabase Auth + database Row Level
+    Security will provide real authorization in the next backend phase.
+    This page contains NO passwords, keys or private data: it only shows the
+    same public restaurant data the customer app already shows.
+  -->
+
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- Icon sprite (used with <use href="#a-...">) -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="a-grid" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></g></symbol>
+    <symbol id="a-book" viewBox="0 0 24 24"><path d="M12 6.5c-2-1.5-4.5-2-8-2v13c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2v-13c-3.5 0-6 .5-8 2Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="a-store" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/></g></symbol>
+    <symbol id="a-phone" viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.4 4.2-2 1.4a12 12 0 0 0 6.3 6.3l1.4-2 4.2 1.4v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="a-toggle" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="10" rx="5"/><circle cx="15.5" cy="12" r="2.6"/></g></symbol>
+    <symbol id="a-megaphone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M4 10v4h3l7 4V6L7 10H4Z"/><path d="M17.5 9a4 4 0 0 1 0 6"/></g></symbol>
+    <symbol id="a-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M6 18l1.6-1.6M16.4 7.6 18 6" stroke-linecap="round"/></g></symbol>
+    <symbol id="a-logout" viewBox="0 0 24 24"><path d="M14 4.5H6.5v15H14M10.5 12H20m-3-3.5L20.5 12 17 15.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="a-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="a-edit" viewBox="0 0 24 24"><path d="m14.5 5.5 4 4L9 19H5v-4l9.5-9.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="a-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5h9l1-12.5"/></g></symbol>
+    <symbol id="a-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="a-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="a-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></g></symbol>
+    <symbol id="a-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+    <symbol id="a-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.1"/></g></symbol>
+    <symbol id="a-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="a-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></g></symbol>
+    <symbol id="a-external" viewBox="0 0 24 24"><path d="M8 16 16.5 7.5M9.5 7.5h7v7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="a-download" viewBox="0 0 24 24"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <!-- Connection message (shown only while offline) -->
+  <div class="net-banner" id="net-banner" role="status" aria-live="polite" hidden>
+    You are offline. Saved preview data is still available; online services need a connection.
+  </div>
+
+  <!-- ======================= LOGIN ======================= -->
+  <main class="login" id="login-view">
+    <section class="login-card" aria-labelledby="login-title">
+      <div class="login-brand">
+        <span class="login-logo">
+          <img src="logo/WhatsApp%20Image%202026-10-26%20at%2012.51.45%20PM.jpeg" alt="Zaytoon Restaurant logo" width="88" height="88">
+        </span>
+        <p class="login-name">Zaytoon Restaurant</p>
+        <p class="login-name-ps" lang="ps" dir="rtl" data-fill="namePs"></p>
+      </div>
+
+      <h1 class="login-title" id="login-title">Admin sign in</h1>
+      <p class="login-sub" id="login-sub">Restaurant management for authorised staff only.</p>
+
+      <!-- 1. Sign in -->
+      <form class="login-form" id="login-form" data-auth-view="signin" novalidate>
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input id="login-email" name="email" type="email" autocomplete="username" inputmode="email"
+                 required aria-describedby="login-email-error">
+          <p class="field-error" id="login-email-error" hidden></p>
+        </div>
+
+        <div class="field">
+          <label for="login-password">Password</label>
+          <div class="input-with-button">
+            <input id="login-password" name="password" type="password" autocomplete="current-password"
+                   required aria-describedby="login-password-error">
+            <button class="icon-button" type="button" id="toggle-password"
+                    aria-label="Show password" aria-pressed="false">
+              <svg class="icon" aria-hidden="true"><use href="#a-eye"/></svg>
+            </button>
+          </div>
+          <p class="field-error" id="login-password-error" hidden></p>
+        </div>
+
+        <div class="alert alert--danger" id="login-error" role="alert" hidden></div>
+
+        <button class="btn btn--primary btn--block" type="submit" id="login-submit">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span class="btn-label">Sign in</span>
+        </button>
+        <button class="link-button" type="button" data-show-auth-view="forgot">Forgot password?</button>
+      </form>
+
+      <!-- 2. Forgot password: Supabase emails a reset link -->
+      <form class="login-form" id="forgot-form" data-auth-view="forgot" novalidate hidden>
+        <p class="login-help">Enter the admin email address. If the account exists, a password reset email will be sent.</p>
+        <div class="field">
+          <label for="forgot-email">Email</label>
+          <input id="forgot-email" name="email" type="email" autocomplete="username" inputmode="email" required>
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="alert" id="forgot-status" role="status" hidden></div>
+        <button class="btn btn--primary btn--block" type="submit" id="forgot-submit">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span class="btn-label">Send reset link</span>
+        </button>
+        <button class="link-button" type="button" data-show-auth-view="signin">Back to sign in</button>
+      </form>
+
+      <!-- 3. Set a new password (opened from the reset email link) -->
+      <form class="login-form" id="recovery-form" data-auth-view="recovery" novalidate hidden>
+        <p class="login-help">Choose a new password for <strong data-fill="recoveryEmail"></strong>.</p>
+        <div class="field">
+          <label for="new-password">New password</label>
+          <input id="new-password" name="password" type="password" autocomplete="new-password" required minlength="10"
+                 aria-describedby="new-password-hint">
+          <p class="field-hint" id="new-password-hint">At least 10 characters. Use a password you don't use anywhere else.</p>
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="new-password-2">Repeat new password</label>
+          <input id="new-password-2" name="password2" type="password" autocomplete="new-password" required>
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="alert alert--danger" id="recovery-error" role="alert" hidden></div>
+        <button class="btn btn--primary btn--block" type="submit" id="recovery-submit">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span class="btn-label">Save new password</span>
+        </button>
+      </form>
+
+      <div class="alert alert--info login-note" id="login-note">
+        <svg class="icon" aria-hidden="true"><use href="#a-lock"/></svg>
+        <p id="login-note-text"></p>
+      </div>
+
+      <!-- Local development only: lets the developer preview the dashboard layout.
+           It is hidden on real hosting (see admin.js → CONFIG.allowLocalPreview). -->
+      <div class="login-preview" id="login-preview" hidden>
+        <button class="btn btn--ghost btn--block" type="button" id="open-preview">
+          Open local preview (not signed in)
+        </button>
+        <p class="login-preview-note">Developer preview with the app's public data. Changes stay only in
+          this browser and are <strong>not</strong> published to customers.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================= DASHBOARD ======================= -->
+  <div class="shell" id="dashboard-view" hidden>
+
+    <!-- Top bar (phones and tablets) -->
+    <header class="topbar">
+      <button class="icon-button" type="button" id="nav-toggle" aria-label="Open navigation"
+              aria-expanded="false" aria-controls="sidebar">
+        <svg class="icon" aria-hidden="true"><use href="#a-menu"/></svg>
+      </button>
+      <span class="topbar-title">Zaytoon Admin</span>
+      <span class="mode-chip" data-fill="modeChip"></span>
+    </header>
+
+    <!-- Sidebar navigation -->
+    <aside class="sidebar" id="sidebar" aria-label="Admin navigation">
+      <div class="sidebar-brand">
+        <span class="sidebar-logo">
+          <img src="logo/WhatsApp%20Image%202026-10-26%20at%2012.51.45%20PM.jpeg" alt="" width="40" height="40">
+        </span>
+        <span>
+          <span class="sidebar-name">Zaytoon</span>
+          <span class="sidebar-sub">Admin Panel</span>
+        </span>
+      </div>
+
+      <nav>
+        <ul class="side-nav">
+          <li><a href="#overview" data-panel="overview"><svg class="icon" aria-hidden="true"><use href="#a-grid"/></svg>Dashboard</a></li>
+          <li><a href="#menu" data-panel="menu"><svg class="icon" aria-hidden="true"><use href="#a-book"/></svg>Menu Management</a></li>
+          <li><a href="#restaurant" data-panel="restaurant"><svg class="icon" aria-hidden="true"><use href="#a-store"/></svg>Restaurant Information</a></li>
+          <li><a href="#contact" data-panel="contact"><svg class="icon" aria-hidden="true"><use href="#a-phone"/></svg>Contact &amp; Social</a></li>
+          <li><a href="#availability" data-panel="availability"><svg class="icon" aria-hidden="true"><use href="#a-toggle"/></svg>Availability</a></li>
+          <li><a href="#notice" data-panel="notice"><svg class="icon" aria-hidden="true"><use href="#a-megaphone"/></svg>Notice</a></li>
+          <li><a href="#settings" data-panel="settings"><svg class="icon" aria-hidden="true"><use href="#a-gear"/></svg>Settings</a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p class="sidebar-user" data-fill="userLabel"></p>
+        <button class="btn btn--sidebar" type="button" id="logout">
+          <svg class="icon" aria-hidden="true"><use href="#a-logout"/></svg>Log out
+        </button>
+      </div>
+    </aside>
+    <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
+
+    <main class="main" id="main" tabindex="-1">
+
+      <!-- Shown in local preview mode -->
+      <div class="banner" id="preview-banner" role="note" hidden>
+        <svg class="icon" aria-hidden="true"><use href="#a-info"/></svg>
+        <p><strong>Preview mode — not signed in.</strong> Changes are saved only in this browser
+          (temporary) and are <strong>not</strong> published to the customer app.</p>
+      </div>
+
+      <!-- ===== 1. Overview ===== -->
+      <section class="panel" id="panel-overview" data-panel-id="overview" aria-labelledby="h-overview" hidden>
+        <header class="panel-head">
+          <div>
+            <h1 id="h-overview">Dashboard</h1>
+            <p>Overview of the menu and restaurant status.</p>
+          </div>
+        </header>
+        <div class="stats" id="stats"></div>
+        <div class="grid-2">
+          <article class="card">
+            <h2 class="card-title">Data source</h2>
+            <dl class="kv" id="data-source"></dl>
+          </article>
+          <article class="card">
+            <h2 class="card-title">Quick links</h2>
+            <div class="quick-links">
+              <a class="btn btn--secondary" href="#menu" data-panel="menu">Manage menu</a>
+              <a class="btn btn--secondary" href="#availability" data-panel="availability">Change availability</a>
+              <a class="btn btn--secondary" href="#notice" data-panel="notice">Edit notice</a>
+              <a class="btn btn--secondary" href="index.html" target="_blank" rel="noopener">
+                Open customer app <svg class="icon" aria-hidden="true"><use href="#a-external"/></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===== 2. Menu management ===== -->
+      <section class="panel" id="panel-menu" data-panel-id="menu" aria-labelledby="h-menu" hidden>
+        <header class="panel-head">
+          <div>
+            <h1 id="h-menu">Menu Management</h1>
+            <p>Each menu page image already contains its dishes and prices.</p>
+          </div>
+          <button class="btn btn--primary" type="button" id="add-item">
+            <svg class="icon" aria-hidden="true"><use href="#a-plus"/></svg>Add menu item
+          </button>
+        </header>
+
+        <!-- Categories (collapsed by default) -->
+        <details class="card categories">
+          <summary>
+            <span>Categories <span class="count-pill" id="category-count"></span></span>
+            <span class="summary-hint">Show / edit</span>
+          </summary>
+          <div class="categories-body">
+            <p class="card-text">Categories group the menu for customers, shown in this order.
+              A category that still has items cannot be deleted.</p>
+            <ul class="cat-list" id="category-list" aria-label="Menu categories"></ul>
+            <button class="btn btn--secondary" type="button" id="add-category">
+              <svg class="icon" aria-hidden="true"><use href="#a-plus"/></svg>Add category
+            </button>
+          </div>
+        </details>
+
+        <div class="toolbar">
+          <div class="search">
+            <svg class="icon" aria-hidden="true"><use href="#a-search"/></svg>
+            <label class="visually-hidden" for="menu-search">Search menu items</label>
+            <input id="menu-search" type="search" placeholder="Search items" autocomplete="off">
+          </div>
+          <label class="visually-hidden" for="menu-filter">Filter by category</label>
+          <select id="menu-filter"></select>
+        </div>
+
+        <p class="list-status" id="menu-count" aria-live="polite"></p>
+        <ul class="item-list" id="item-list" aria-label="Menu items"></ul>
+        <div class="empty" id="menu-empty" hidden>
+          <p class="empty-title">No menu items found</p>
+          <p>Try another search or category, or add a new item.</p>
+        </div>
+      </section>
+
+      <!-- ===== 3. Restaurant information ===== -->
+      <section class="panel" id="panel-restaurant" data-panel-id="restaurant" aria-labelledby="h-restaurant" hidden>
+        <header class="panel-head">
+          <div>
+            <h1 id="h-restaurant">Restaurant Information</h1>
+            <p>Name and address shown in the customer app.</p>
+          </div>
+        </header>
+        <form class="card form" id="form-restaurant" novalidate data-form="restaurant">
+          <div class="form-grid">
+            <div class="field">
+              <label for="f-name">Restaurant name <span class="req">*</span></label>
+              <input id="f-name" name="name" required maxlength="80">
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field">
+              <label for="f-namePs">Restaurant name (Pashto)</label>
+              <input id="f-namePs" name="namePs" dir="rtl" lang="ps" maxlength="80">
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field field--wide">
+              <label for="f-addressPs">Address (Pashto) <span class="req">*</span></label>
+              <textarea id="f-addressPs" name="addressPs" dir="rtl" lang="ps" rows="2" required maxlength="300"></textarea>
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field field--wide">
+              <label for="f-addressEn">Address (English) <span class="req">*</span></label>
+              <textarea id="f-addressEn" name="addressEn" rows="2" required maxlength="300"></textarea>
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field field--wide">
+              <label for="f-mapUrl">Map link (optional)</label>
+              <input id="f-mapUrl" name="mapUrl" type="url" inputmode="url" placeholder="https://"
+                     aria-describedby="f-mapUrl-hint">
+              <p class="field-hint" id="f-mapUrl-hint">Only add a real, checked map link. Leave empty if there is none.</p>
+              <p class="field-error" hidden></p>
+            </div>
+          </div>
+          <div class="form-foot">
+            <p class="form-status" aria-live="polite"></p>
+            <button class="btn btn--ghost" type="reset">Undo changes</button>
+            <button class="btn btn--primary" type="submit">Save changes</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===== 4. Contact & social ===== -->
+      <section class="panel" id="panel-contact" data-panel-id="contact" aria-labelledby="h-contact" hidden>
+        <header class="panel-head">
+          <div>
+            <h1 id="h-contact">Contact &amp; Social</h1>
+            <p>Phone numbers used for ordering, WhatsApp contact and social links.</p>
+          </div>
+        </header>
+
+        <form class="card form" id="form-contact" novalidate data-form="contact">
+          <h2 class="card-title">Phone numbers (orders by phone)</h2>
+          <div class="form-grid form-grid--3">
+            <div class="field">
+              <label for="f-phone1">Phone number 1 <span class="req">*</span></label>
+              <input id="f-phone1" name="phone1" type="tel" dir="ltr" inputmode="tel" required placeholder="+93…">
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field">
+              <label for="f-phone2">Phone number 2</label>
+              <input id="f-phone2" name="phone2" type="tel" dir="ltr" inputmode="tel" placeholder="+93…">
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field">
+              <label for="f-phone3">Phone number 3</label>
+              <input id="f-phone3" name="phone3" type="tel" dir="ltr" inputmode="tel" placeholder="+93…">
+              <p class="field-error" hidden></p>
+            </div>
+          </div>
+
+          <h2 class="card-title">WhatsApp Contact</h2>
+          <div class="alert alert--warning">
+            <svg class="icon" aria-hidden="true"><use href="#a-info"/></svg>
+            <p>WhatsApp is for contact only. <strong>Orders are not accepted on WhatsApp</strong> — the customer
+              app always shows this warning next to the WhatsApp number.</p>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="f-whatsapp">WhatsApp Contact number</label>
+              <input id="f-whatsapp" name="whatsapp" type="tel" dir="ltr" inputmode="tel" placeholder="+93…">
+              <p class="field-error" hidden></p>
+            </div>
+          </div>
+          <div class="form-foot">
+            <p class="form-status" aria-live="polite"></p>
+            <button class="btn btn--ghost" type="reset">Undo changes</button>
+            <button class="btn btn--primary" type="submit">Save contact</button>
+          </div>
+        </form>
+
+        <form class="card form" id="form-social" novalidate data-form="social">
+          <h2 class="card-title">Social media</h2>
+          <div class="form-grid">
+            <div class="field field--wide">
+              <label for="f-facebook">Facebook URL</label>
+              <input id="f-facebook" name="facebook" type="url" dir="ltr" inputmode="url" placeholder="https://www.facebook.com/…">
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field field--wide">
+              <label for="f-tiktok">TikTok URL</label>
+              <input id="f-tiktok" name="tiktok" type="url" dir="ltr" inputmode="url" placeholder="https://www.tiktok.com/@…">
+              <p class="field-error" hidden></p>
+            </div>
+          </div>
+          <div class="form-foot">
+            <p class="form-status" aria-live="polite"></p>
+            <button class="btn btn--ghost" type="reset">Undo changes</button>
+            <button class="btn btn--primary" type="submit">Save social links</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===== 5. Availability ===== -->
+      <section class="panel" id="panel-availability" data-panel-id="availability" aria-labelledby="h-availability" hidden>
+        <header class="panel-head">
+          <div>
+            <h1 id="h-availability">Availability Settings</h1>
+            <p>Status badges and texts shown to customers.</p>
+          </div>
+        </header>
+        <form class="card form" id="form-availability" novalidate data-form="availability">
+          <div class="setting">
+            <div class="setting-text">
+              <h2 class="setting-title" id="lbl-delivery">Delivery active</h2>
+              <p>Shows “Active” or “Unavailable” on the delivery card.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" name="deliveryActive" aria-labelledby="lbl-delivery">
+              <span class="switch-track" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="f-deliveryPs">Delivery text (Pashto) <span class="req">*</span></label>
+              <input id="f-deliveryPs" name="deliveryPs" dir="rtl" lang="ps" required maxlength="120">
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="field">
+              <label for="f-deliveryEn">Delivery text (English) <span class="req">*</span></label>
+              <input id="f-deliveryEn" name="deliveryEn" required maxlength="120">
+              <p class="field-error" hidden></p>
+            </div>
+          </div>
+
+          <p class="field-hint">Remember to update the texts when you switch the status, so they match.</p>
+          <div class="form-foot">
+            <p class="form-status" aria-live="polite"></p>
+            <button class="btn btn--ghost" type="reset">Undo changes</button>
+            <button class="btn btn--primary" type="submit">Save availability</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===== 6. Notice ===== -->
+      <section class="panel" id="panel-notice" data-panel-id="notice" aria-labelledby="h-notice" hidden>
+        <header class="panel-head">
+          <div>
+            <h1 id="h-notice">Notice Management</h1>
+            <p>The Pashto message shown to customers. One line per row.</p>
+          </div>
+        </header>
+        <form class="card form" id="form-notice" novalidate data-form="notice">
+          <div class="notice-editor">
+            <div class="field">
+              <label for="f-notice">Notice text <span class="req">*</span></label>
+              <textarea id="f-notice" name="notice" dir="rtl" lang="ps" rows="16" required maxlength="2000"
+                        aria-describedby="f-notice-count"></textarea>
+              <p class="field-hint" id="f-notice-count" aria-live="polite"></p>
+              <p class="field-error" hidden></p>
+            </div>
+            <div class="notice-preview-wrap">
+              <p class="preview-label" id="notice-preview-label">Live preview</p>
+              <div class="notice-preview" id="notice-preview" lang="ps" dir="rtl" aria-labelledby="notice-preview-label"></div>
+            </div>
+          </div>
+          <div class="form-foot">
+            <p class="form-status" aria-live="polite"></p>
+            <button class="btn btn--ghost" type="reset">Undo changes</button>
+            <button class="btn btn--primary" type="submit">Save notice</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ===== 7. Settings ===== -->
+      <section class="panel" id="panel-settings" data-panel-id="settings" aria-labelledby="h-settings" hidden>
+        <header class="panel-head">
+          <div>
+            <h1 id="h-settings">Settings</h1>
+            <p>Connection, data and security status.</p>
+          </div>
+        </header>
+        <div class="grid-2">
+          <article class="card">
+            <h2 class="card-title">Connection</h2>
+            <dl class="kv" id="settings-status"></dl>
+          </article>
+          <article class="card">
+            <h2 class="card-title">Preview data</h2>
+            <p class="card-text">Preview changes live only in this browser. Export them to hand to the developer,
+              or reset to the app's current data.</p>
+            <div class="quick-links">
+              <button class="btn btn--secondary" type="button" id="export-data">
+                <svg class="icon" aria-hidden="true"><use href="#a-download"/></svg>Export preview data (JSON)
+              </button>
+              <button class="btn btn--danger-ghost" type="button" id="reset-data">Reset preview changes</button>
+            </div>
+          </article>
+        </div>
+        <article class="card">
+          <h2 class="card-title">Security</h2>
+          <ul class="checklist">
+            <li>Hiding this page is <strong>not</strong> security. Supabase Auth checks who you are, and the database's
+              Row Level Security decides what you may change — on every single request.</li>
+            <li>Only accounts with the <em>admin</em> role can change restaurant data or images. Roles can only be
+              changed by the project owner in the Supabase dashboard, never from this app.</li>
+            <li>Your sign-in is kept only while this page is open. Closing or reloading it signs you out.</li>
+            <li>No passwords, keys or admin secrets are stored in this app’s code or in the browser.</li>
+            <li>Only signed-in users with the <em>admin</em> role will be able to change data — enforced by the database.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- ======================= DIALOGS ======================= -->
+
+  <!-- Add / edit menu item -->
+  <dialog class="dialog" id="item-dialog" aria-labelledby="item-dialog-title">
+    <form class="dialog-form" id="item-form" method="dialog" novalidate>
+      <header class="dialog-head">
+        <h2 id="item-dialog-title">Add menu item</h2>
+        <button class="icon-button" type="button" data-dialog-cancel aria-label="Close">
+          <svg class="icon" aria-hidden="true"><use href="#a-close"/></svg>
+        </button>
+      </header>
+
+      <div class="dialog-body">
+        <div class="form-grid">
+          <div class="field">
+            <label for="i-title">Item name <span class="req">*</span></label>
+            <input id="i-title" name="title" required maxlength="80">
+            <p class="field-error" hidden></p>
+          </div>
+          <div class="field">
+            <label for="i-titlePs">Item name (Pashto)</label>
+            <input id="i-titlePs" name="titlePs" dir="rtl" lang="ps" maxlength="80">
+            <p class="field-error" hidden></p>
+          </div>
+          <div class="field field--wide">
+            <label for="i-description">Description</label>
+            <textarea id="i-description" name="description" rows="2" maxlength="300"></textarea>
+            <p class="field-error" hidden></p>
+          </div>
+          <div class="field">
+            <label for="i-price">Price (Afs)</label>
+            <input id="i-price" name="price" type="text" inputmode="decimal" dir="ltr"
+                   aria-describedby="i-price-hint" placeholder="e.g. 250">
+            <p class="field-hint" id="i-price-hint">Leave empty for full menu pages — their prices are printed on the image.</p>
+            <p class="field-error" hidden></p>
+          </div>
+          <div class="field">
+            <label for="i-category">Category <span class="req">*</span></label>
+            <select id="i-category" name="category" required></select>
+            <p class="field-error" hidden></p>
+          </div>
+
+          <div class="field">
+            <label for="i-order">Display order</label>
+            <input id="i-order" name="order" type="text" inputmode="numeric" dir="ltr" aria-describedby="i-order-hint">
+            <p class="field-hint" id="i-order-hint">Lower numbers are shown first.</p>
+            <p class="field-error" hidden></p>
+          </div>
+
+          <div class="field field--wide">
+            <label for="i-image">Image</label>
+            <div class="image-picker">
+              <img class="image-preview" id="i-image-preview" alt="" hidden>
+              <div class="image-picker-controls">
+                <select id="i-image" name="image" aria-describedby="i-image-hint"></select>
+                <label class="file-label" for="i-upload">Or upload a new image (JPG, PNG or WebP)</label>
+                <input id="i-upload" name="upload" type="file" accept="image/jpeg,image/png,image/webp">
+                <p class="field-hint" id="i-image-hint">Choose “No image” to remove the picture. Files in <code>img/</code>
+                  are never renamed or deleted. New uploads are resized to max 2000 px and stored in Supabase
+                  (signed-in admins only).</p>
+              </div>
+            </div>
+            <p class="field-error" hidden></p>
+          </div>
+
+          <div class="setting setting--inline field--wide">
+            <div class="setting-text">
+              <p class="setting-title" id="lbl-available">Available to customers</p>
+              <p>Unavailable items are hidden from the customer menu.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" name="active" aria-labelledby="lbl-available">
+              <span class="switch-track" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+        <div class="alert alert--danger" id="item-form-error" role="alert" hidden></div>
+      </div>
+
+      <footer class="dialog-foot">
+        <button class="btn btn--ghost" type="button" data-dialog-cancel>Cancel</button>
+        <button class="btn btn--primary" type="submit" id="item-save">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Add / edit category -->
+  <dialog class="dialog dialog--small" id="category-dialog" aria-labelledby="category-dialog-title">
+    <form class="dialog-form" id="category-form" method="dialog" novalidate>
+      <header class="dialog-head">
+        <h2 id="category-dialog-title">Add category</h2>
+        <button class="icon-button" type="button" data-dialog-cancel aria-label="Close">
+          <svg class="icon" aria-hidden="true"><use href="#a-close"/></svg>
+        </button>
+      </header>
+      <div class="dialog-body">
+        <div class="field">
+          <label for="c-label">Category name <span class="req">*</span></label>
+          <input id="c-label" name="label" required maxlength="80">
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="c-labelPs">Category name (Pashto)</label>
+          <input id="c-labelPs" name="labelPs" dir="rtl" lang="ps" maxlength="80">
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="c-description">Description</label>
+          <textarea id="c-description" name="description" rows="2" maxlength="300"></textarea>
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="field">
+          <label for="c-order">Display order</label>
+          <input id="c-order" name="order" type="text" inputmode="numeric" dir="ltr">
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="setting setting--inline">
+          <div class="setting-text">
+            <p class="setting-title" id="lbl-cat-active">Visible to customers</p>
+            <p>Hidden categories (and their items) are not shown in the customer menu.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" name="active" aria-labelledby="lbl-cat-active">
+            <span class="switch-track" aria-hidden="true"></span>
+          </label>
+        </div>
+        <div class="alert alert--danger" id="category-form-error" role="alert" hidden></div>
+      </div>
+      <footer class="dialog-foot">
+        <button class="btn btn--ghost" type="button" data-dialog-cancel>Cancel</button>
+        <button class="btn btn--primary" type="submit" id="category-save">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Confirmation (delete, discard changes, reset, log out) -->
+  <dialog class="dialog dialog--small" id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+    <div class="dialog-form">
+      <div class="dialog-body">
+        <h2 class="confirm-title" id="confirm-title"></h2>
+        <p class="confirm-text" id="confirm-text"></p>
+      </div>
+      <footer class="dialog-foot">
+        <button class="btn btn--ghost" type="button" id="confirm-cancel">Cancel</button>
+        <button class="btn btn--danger" type="button" id="confirm-ok">Delete</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <!-- Toast messages -->
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Public data files (the same files the customer app uses) -->
+  <script src="restaurant-data.js" defer></script>
+  <script src="menu-data.js" defer></script>
+  <script src="supabase-config.js" defer></script>
+  <script src="supabase-data.js" defer></script>
+  <script src="supabase-auth.js" defer></script>
+  <script src="admin.js" defer></script>
+</body>
+</html>

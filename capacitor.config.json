@@ -1,0 +1,27 @@
+{
+  "appId": "com.zaytoonrestaurant.kandahar",
+  "appName": "Zaytoon Restaurant",
+  "webDir": "www",
+  "loggingBehavior": "debug",
+  "android": {
+    "backgroundColor": "#070806",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 300,
+      "backgroundColor": "#070806",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_INSIDE",
+      "splashFullScreen": false,
+      "splashImmersive": false
+    },
+    "SystemBars": {
+      "insetsHandling": "css",
+      "style": "DARK"
+    }
+  }
+}

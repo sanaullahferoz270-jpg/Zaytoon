@@ -1,0 +1,36 @@
+# ==========================================================
+# Zaytoon Restaurant — HTTP security headers (Step 9)
+# ----------------------------------------------------------
+# This file is read automatically by Netlify and Cloudflare Pages.
+# For other hosts (Apache, Nginx, Vercel …) set the same headers
+# in the host's settings — see DEPLOYMENT.md.
+#
+# BEFORE DEPLOYING: replace YOUR-PROJECT-REF.supabase.co (2 places)
+# with your real Supabase project address from supabase-config.js.
+#
+# HTML/JavaScript cannot set these headers themselves; the web
+# server must send them.
+# ==========================================================
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://YOUR-PROJECT-REF.supabase.co; font-src 'self'; connect-src 'self' https://YOUR-PROJECT-REF.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  X-Frame-Options: DENY
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# The service worker must always be checked for updates
+/sw.js
+  Cache-Control: no-cache
+
+# Admin files: never stored by browsers or shared caches, never indexed
+/admin.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+/admin.js
+  Cache-Control: no-store
+/admin.css
+  Cache-Control: no-store
+/supabase-auth.js
+  Cache-Control: no-store

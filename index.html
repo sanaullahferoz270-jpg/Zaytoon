@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description"
+    content="Zaytoon Restaurant, Kandahar — family platters, kababs, karahi, pizza, burgers, broast, majoon and fresh juices. Delivery services are active. Call to order.">
+  <!-- Browser toolbar colour on mobile (same olive green as manifest.json) -->
+  <meta name="theme-color" content="#6b8e23">
+
+  <title>Zaytoon Restaurant | Kandahar</title>
+
+  <!-- PWA: app name, icons and colours for "Add to Home screen".
+       The offline cache (sw.js) only works on http://localhost or https:// — not file:// -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="application-name" content="Zaytoon">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Zaytoon">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <!-- Icons: resized copies of the supplied logo (the original file is unchanged) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="icon" type="image/jpeg" href="logo/WhatsApp%20Image%202026-10-26%20at%2012.51.45%20PM.jpeg">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+
+  <!-- Marks that JavaScript is running, so scroll-reveal styles only apply when they can be undone.
+       (A file, not an inline script, so a strict Content-Security-Policy can be used.) -->
+  <script src="boot.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ============ ICON SPRITE (reused with <use href="#icon-...">) ============ -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="icon-phone" viewBox="0 0 24 24">
+      <path
+        d="M6.6 3.5h2.6l1.4 4.2-2 1.4a12 12 0 0 0 6.3 6.3l1.4-2 4.2 1.4v2.6a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2Z"
+        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-truck" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M2.5 6.5h11v9h-11zM13.5 9.5h4l3 3.2v2.8h-7" />
+        <circle cx="7" cy="17.5" r="1.8" />
+        <circle cx="17" cy="17.5" r="1.8" />
+      </g>
+    </symbol>
+    <symbol id="icon-pin" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M12 21s-6.5-6.1-6.5-11a6.5 6.5 0 0 1 13 0c0 4.9-6.5 11-6.5 11Z" stroke-linejoin="round" />
+        <circle cx="12" cy="10" r="2.4" />
+      </g>
+    </symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-external" viewBox="0 0 24 24">
+      <path d="M8 16 16.5 7.5M9.5 7.5h7v7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24">
+      <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-prev" viewBox="0 0 24 24">
+      <path d="m14.5 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-next" viewBox="0 0 24 24">
+      <path d="m9.5 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-expand" viewBox="0 0 24 24">
+      <path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-chat" viewBox="0 0 24 24">
+      <path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M12 7.5v5.5M12 16.4v.1" />
+      </g>
+    </symbol>
+    <symbol id="icon-like" viewBox="0 0 24 24">
+      <path
+        d="M7.5 10.5v9h-3v-9h3Zm0 0 3.6-6.2a1.6 1.6 0 0 1 3 .9l-.6 4.3h4.8a2 2 0 0 1 2 2.4l-1.2 6a2 2 0 0 1-2 1.6H7.5"
+        fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-music" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5.5l10-2V16" />
+        <circle cx="6.5" cy="18" r="2.5" />
+        <circle cx="16.5" cy="16" r="2.5" />
+      </g>
+    </symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+        <rect x="8.5" y="8.5" width="11" height="11" rx="2.5" />
+        <path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5" />
+      </g>
+    </symbol>
+    <symbol id="icon-menu-book" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M12 6.5c-2-1.5-4.5-2-8-2v13c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2v-13c-3.5 0-6 .5-8 2Zm0 0v13" />
+      </g>
+    </symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="m16 16 4 4" />
+      </g>
+    </symbol>
+    <symbol id="icon-leaf" viewBox="0 0 24 24">
+      <path d="M4 20C4 10 10 4 20 4c0 10-6 16-16 16Zm0 0 9-9" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER / NAVIGATION ============ -->
+  <header class="site-header" id="site-header">
+    <div class="header-bar">
+      <a href="#home" class="brand" aria-label="Zaytoon Restaurant — back to top">
+        <span class="brand-mark">
+          <img src="logo/WhatsApp%20Image%202026-10-26%20at%2012.51.45%20PM.jpeg" alt="" width="44" height="44">
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Zaytoon</span>
+          <span class="brand-sub">Restaurant</span>
+        </span>
+      </a>
+
+      <!-- On desktop this is an inline menu; on mobile it becomes a full-screen panel -->
+      <nav class="main-nav" id="main-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a class="nav-link" href="#home" data-section="home">Home</a></li>
+          <li><a class="nav-link" href="#menu" data-section="menu">Menu</a></li>
+          <li><a class="nav-link" href="#about" data-section="about">About</a></li>
+          <li><a class="nav-link" href="#contact" data-section="contact">Contact</a></li>
+        </ul>
+
+        <!-- Mobile-only: call buttons inside the open menu (filled from restaurant-data.js) -->
+        <div class="nav-call" data-render="nav-phones">
+          <p class="nav-call-title">Call to order</p>
+        </div>
+      </nav>
+
+      <a class="btn btn-primary btn-sm header-call" href="#contact" data-call-primary>
+        <svg class="icon">
+          <use href="#icon-phone" />
+        </svg>Call Now
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Connection badge: "Offline Mode" while offline, "Online" briefly when it returns -->
+  <div class="net-status" id="net-status" role="status" aria-live="polite" hidden>
+    <span class="net-status-dot" aria-hidden="true"></span>
+    <span class="net-status-text"></span>
+  </div>
+
+  <main id="main">
+
+    <!-- ============ HERO ============ -->
+    <section id="home" class="hero" aria-labelledby="hero-title">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="hero-glow hero-glow--one"></span>
+        <span class="hero-glow hero-glow--two"></span>
+        <span class="hero-watermark" lang="ps">زیتون</span>
+      </div>
+
+      <div class="container hero-inner">
+        <div class="hero-visual hero-anim" style="--d: 0">
+          <div class="hero-emblem">
+            <span class="hero-ring hero-ring--outer"></span>
+            <span class="hero-ring hero-ring--inner"></span>
+            <img class="hero-logo" src="logo/WhatsApp%20Image%202026-10-26%20at%2012.51.45%20PM.jpeg"
+              alt="Zaytoon Restaurant logo" width="1063" height="1063">
+          </div>
+        </div>
+
+        <div class="hero-content">
+          <p class="eyebrow hero-anim" style="--d: 1">Kandahar &middot; Afghanistan</p>
+          <h1 class="hero-title hero-anim" id="hero-title" style="--d: 2">
+            <span class="hero-title-main">Zaytoon</span>
+            <span class="hero-title-sub">Restaurant</span>
+          </h1>
+          <p class="hero-lead hero-anim" style="--d: 3">
+            Generous family platters, kababs, karahi, pizza, broast and fresh juices &mdash;
+            prepared in Kandahar and delivered to your door.
+          </p>
+          <div class="hero-actions hero-anim" style="--d: 4">
+            <a class="btn btn-primary btn-lg" href="#menu">
+              View Menu <svg class="icon">
+                <use href="#icon-arrow" />
+              </svg>
+            </a>
+            <a class="btn btn-ghost btn-lg" href="#contact" data-call-primary>
+              <svg class="icon">
+                <use href="#icon-phone" />
+              </svg> Call Now
+            </a>
+          </div>
+          <ul class="hero-status hero-anim" style="--d: 5" data-render="hero-status"></ul>
+        </div>
+      </div>
+
+      <a class="scroll-cue" href="#info" aria-label="Scroll to restaurant information">
+        <span class="scroll-cue-line"></span>
+      </a>
+    </section>
+
+    <!-- ============ RESTAURANT INFORMATION + QUICK ACTIONS ============ -->
+    <!-- Cards and buttons are filled from restaurant-data.js by script.js -->
+    <section id="info" class="section info" aria-labelledby="info-title">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Restaurant Information</p>
+          <h2 class="section-title" id="info-title">Good to <em>know</em></h2>
+        </header>
+
+        <div class="info-grid" data-render="info-cards"></div>
+
+        <div class="quick-actions" data-reveal>
+          <h3 class="quick-actions-title">Quick actions</h3>
+          <div class="quick-actions-list" data-render="quick-actions"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MENU ============ -->
+    <section id="menu" class="section menu" aria-labelledby="menu-title">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Our Menu</p>
+          <h2 class="section-title" id="menu-title">The Zaytoon <em>Menu</em></h2>
+          <p class="section-lead">Browse our menu pages below. Tap any page to open it full screen.</p>
+        </header>
+
+        <div class="menu-toolbar">
+          <!-- Search (matches the page titles and categories read from the menu images) -->
+          <div class="menu-search" role="search">
+            <label class="visually-hidden" for="menu-search-input">Search the menu</label>
+            <svg class="icon menu-search-icon" aria-hidden="true">
+              <use href="#icon-search" />
+            </svg>
+            <input class="menu-search-input" id="menu-search-input" type="search"
+              placeholder="Search the menu: Pizza, Kabab…" autocomplete="off" spellcheck="false" enterkeyhint="search"
+              aria-controls="menu-grid">
+            <button class="menu-search-clear" id="menu-search-clear" type="button" aria-label="Clear search" hidden>
+              <svg class="icon">
+                <use href="#icon-close" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Category buttons are created by script.js from the menu data -->
+          <div class="menu-filters" id="menu-filters" role="group" aria-label="Filter menu by category"></div>
+        </div>
+
+        <!-- Live result count (read out by screen readers) -->
+        <p class="menu-status" id="menu-status" aria-live="polite"></p>
+
+        <!-- Menu cards are created by script.js using the existing images in img/ -->
+        <ul class="menu-grid" id="menu-grid" aria-label="Menu pages"></ul>
+
+        <!-- Shown when a category or search has no menu pages -->
+        <div class="menu-empty" id="menu-empty" hidden>
+          <span class="menu-empty-icon"><svg class="icon">
+              <use href="#icon-leaf" />
+            </svg></span>
+          <p class="menu-empty-title" id="menu-empty-title">Menu items coming soon.</p>
+          <p class="menu-empty-text" id="menu-empty-text"></p>
+          <button class="btn btn-ghost" type="button" id="menu-empty-reset" hidden>Show all menu pages</button>
+        </div>
+
+        <noscript>
+          <p class="section-lead">Please enable JavaScript to browse the menu gallery.</p>
+        </noscript>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section id="about" class="section about" aria-label="About Zaytoon Restaurant">
+      <span class="about-watermark" aria-hidden="true" lang="ps">زیتون</span>
+      <div class="container about-inner">
+        <div class="about-intro" data-reveal>
+          <p class="eyebrow">About</p>
+          <h2 class="section-title" id="about-title">Zaytoon <em>Restaurant</em></h2>
+          <p class="about-lead">
+            A Kandahar restaurant serving family platters, kababs, karahi, pizza, burgers,
+            rolls, broast, majoon and fresh juices.
+          </p>
+          <a class="btn btn-dark" href="#menu">Explore the menu <svg class="icon">
+              <use href="#icon-arrow" />
+            </svg></a>
+        </div>
+
+        <dl class="about-facts" data-reveal style="--reveal-delay: 120ms" data-render="about-facts"></dl>
+      </div>
+    </section>
+
+    <!-- ============ RESTAURANT NOTICE (Pashto, right-to-left) ============ -->
+    <section id="notice" class="section notice" aria-labelledby="notice-title">
+      <div class="container">
+        <header class="section-head section-head--center" data-reveal>
+          <p class="eyebrow">Restaurant Notice</p>
+          <h2 class="section-title" id="notice-title">A message from <em>Zaytoon</em></h2>
+        </header>
+
+        <!-- Exact Pashto notice, built from restaurant-data.js -->
+        <article class="notice-card" lang="ps" dir="rtl" data-reveal data-render="notice"></article>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section id="contact" class="section contact" aria-labelledby="contact-title">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Contact</p>
+          <h2 class="section-title" id="contact-title">Call to <em>order</em></h2>
+          <p class="section-lead">Orders are taken by phone. Tap a number to call.</p>
+        </header>
+
+        <ul class="phone-list" data-render="phone-buttons"></ul>
+
+        <div class="contact-grid">
+          <article class="contact-card" data-reveal data-render="whatsapp-card" aria-labelledby="whatsapp-title">
+          </article>
+          <article class="contact-card" data-reveal style="--reveal-delay: 80ms" data-render="social-card"
+            aria-labelledby="social-title"></article>
+          <article class="contact-card" id="address" data-reveal style="--reveal-delay: 160ms"
+            data-render="address-card" aria-labelledby="address-title"></article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <!-- Footer details are filled from restaurant-data.js -->
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="brand-mark brand-mark--lg">
+          <img src="logo/WhatsApp%20Image%202026-10-26%20at%2012.51.45%20PM.jpeg" alt="" width="64" height="64"
+            loading="lazy">
+        </span>
+        <div data-render="footer-brand"></div>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Address</h2>
+        <div data-render="footer-address"></div>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Call to order</h2>
+        <ul class="footer-list" data-render="footer-phones"></ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Connect</h2>
+        <ul class="footer-list" data-render="footer-social"></ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; <span id="current-year">2026</span> <span data-render="footer-name">Zaytoon Restaurant</span>. All
+        rights reserved.</p>
+      <a href="#home" class="footer-top">Back to top</a>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE FLOATING CALL BUTTON ============ -->
+  <div class="call-fab" id="call-fab">
+    <div class="call-sheet" id="call-sheet" hidden data-render="sheet-phones">
+      <p class="call-sheet-title">Call to order</p>
+    </div>
+    <button class="call-fab-btn" id="call-fab-btn" type="button" aria-expanded="false" aria-controls="call-sheet"
+      aria-label="Show phone numbers">
+      <svg class="icon icon-open">
+        <use href="#icon-phone" />
+      </svg>
+      <svg class="icon icon-close">
+        <use href="#icon-close" />
+      </svg>
+    </button>
+  </div>
+
+
+
+  
+  <!-- ============ FULL-SCREEN MENU IMAGE VIEWER ============ -->
+  <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="viewer-title" hidden>
+    <div class="viewer-top">
+      <p class="viewer-caption">
+        <span class="viewer-title" id="viewer-title"></span>
+        <span class="viewer-title-ps" id="viewer-title-ps" lang="ps" dir="rtl"></span>
+      </p>
+      <button class="icon-btn" type="button" data-viewer-close aria-label="Close viewer">
+        <svg class="icon">
+          <use href="#icon-close" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="viewer-stage" id="viewer-stage">
+      <img class="viewer-img" id="viewer-img" alt="">
+      <div class="viewer-fallback" id="viewer-fallback" hidden>
+        <svg class="icon" aria-hidden="true">
+          <use href="#icon-leaf" />
+        </svg>
+        <p class="viewer-fallback-title">Image unavailable</p>
+        <p>This menu page could not be loaded. Please call us for the menu.</p>
+      </div>
+    </div>
+
+    <div class="viewer-bottom">
+      <button class="icon-btn" type="button" id="viewer-prev" aria-label="Previous menu page">
+        <svg class="icon">
+          <use href="#icon-prev" />
+        </svg>
+      </button>
+      <p class="viewer-meta">
+        <span id="viewer-count" aria-live="polite"></span>
+        <span class="viewer-hint">Tap to zoom &middot; Swipe</span>
+      </p>
+      <button class="icon-btn" type="button" id="viewer-next" aria-label="Next menu page">
+        <svg class="icon">
+          <use href="#icon-next" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- "defer" runs the scripts in order after the HTML is parsed.
+       restaurant-data.js = local restaurant info (used when Supabase is unavailable)
+       menu-data.js       = local menu list       (used when Supabase is unavailable)
+       supabase-config.js = PUBLIC Supabase URL + anon key (never secret keys)
+       supabase-data.js   = the only code that talks to Supabase
+       script.js    = all page behaviour -->
+  <!-- Small confirmation message (e.g. "Address copied") -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="restaurant-data.js" defer></script>
+  <script src="menu-data.js" defer></script>
+  <script src="supabase-config.js" defer></script>
+  <script src="supabase-data.js" defer></script>
+  <script src="native-app.js" defer></script>   <!-- Android app only: back button (does nothing on the website) -->
+  <script src="script.js" defer></script>
+</body>
+
+</html>

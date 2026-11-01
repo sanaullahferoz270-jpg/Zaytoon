@@ -1,0 +1,22 @@
+{
+  "name": "zaytoon-restaurant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zaytoon Restaurant — Android app (Capacitor) built from the existing website",
+  "scripts": {
+    "build": "node scripts/build-web.mjs",
+    "postinstall": "node scripts/build-web.mjs",
+    "capacitor:copy:before": "node scripts/build-web.mjs",
+    "sync": "npx cap sync android",
+    "open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.0",
+    "@capacitor/splash-screen": "8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.0"
+  }
+}
